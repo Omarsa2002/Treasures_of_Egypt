@@ -209,7 +209,7 @@ const checkToken = async (req, res, next) => {
 const signOut=async(req,res,next)=>{ 
     try {
         if(req.headers["Authorization"]||req.headers["authorization"]){
-            const token =req.headers["Authorization"] || req.headers["authorization"].split("restaurant_")[1];
+            const token =req.headers["Authorization"] || req.headers["authorization"].split("treasures_")[1];
             const deletetoken=await tokenSchema.findOneAndDelete({token:token})
             if(deletetoken){
                 delete req.headers['Authorization']||req.headers['authorization']
