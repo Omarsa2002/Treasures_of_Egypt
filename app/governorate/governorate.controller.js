@@ -27,33 +27,11 @@ const allHistoricalSites = async(req,res,next)=>{
         let updateData = data.map(site =>{
             const { _id, ...rest } = site.toObject({getters: true});
             return {
-                Location: rest.Location,
                 siteId: rest.siteId,
                 en_Site_Name: rest.en_Site_Name,
-                en_adress: rest.en_adress,
-                en_Historical_Period: rest.en_Historical_Period,
-                en_Description: rest.en_Description,  
                 en_Opening_Hours: rest.en_Opening_Hours,
-                en_Visitor_Statistics: rest.en_Visitor_Statistics,
-                en_Nearby_Amenities: rest.en_Nearby_Amenities, 
-                en_City: rest.en_City, 
-                en_Region: rest.en_Region,
-                en_Average_Temperature: rest.en_Average_Temperature, 
-                en_Best_Visiting_Season: rest.en_Best_Visiting_Season,
-                en_Transportation_Options: rest.en_Transportation_Options, 
                 ar_Site_Name: rest.ar_Site_Name,  
-                ar_adress: rest.ar_adress,  
-                ar_Historical_Period: rest.ar_Historical_Period,
-                ar_Description: rest.ar_Description,
                 ar_Opening_Hours: rest.ar_Opening_Hours,  
-                ar_Visitor_Statistics: rest.ar_Visitor_Statistics,
-                ar_Nearby_Amenities: rest.ar_Nearby_Amenities,
-                ar_City: rest.ar_City ,
-                ar_Region: rest.ar_Region,
-                ar_Average_Temperature: rest.ar_Average_Temperature,  
-                ar_Best_Visiting_Season: rest.ar_Best_Visiting_Season , 
-                ar_Transportation_Options: rest.ar_Transportation_Options , 
-                Entry_Fee: rest.Entry_Fee  ,
                 Photo_URL: rest.Photo_URL, 
             };
         })
@@ -71,35 +49,11 @@ const allRecreationalSites = async(req,res,next)=>{
         let updateData = data.map(site =>{
             const { _id, ...rest } = site.toObject({getters: true});
             return {
-                Location: rest.Location,
                 siteId: rest.siteId,
                 en_Site_Name: rest.en_Site_Name,
-                en_adress: rest.en_adress,
-                en_Type_of_Activity: rest.en_Type_of_Activity,
-                en_Description: rest.en_Description,
                 en_Opening_Hours: rest.en_Opening_Hours,
-                en_Visitor_Statistics: rest.en_Visitor_Statistics,
-                en_Nearby_Amenities: rest.en_Nearby_Amenities,
-                en_General_Information: rest.en_General_Information,
-                en_City: rest.en_City,
-                en_Region: rest.en_Region,
-                en_Average_Temperature: rest.en_Average_Temperature,
-                en_Best_Visiting_Season: rest.en_Best_Visiting_Season,
-                en_Transportation_Options: rest.en_Transportation_Options,
                 ar_Site_Name: rest.ar_Site_Name,
-                ar_adress: rest.ar_adress,
-                ar_Type_of_Activity: rest.ar_Type_of_Activity,
-                ar_Description: rest.ar_Description,
                 ar_Opening_Hours: rest.ar_Opening_Hours,
-                ar_Visitor_Statistics: rest.ar_Visitor_Statistics,
-                ar_Nearby_Amenities: rest.ar_Nearby_Amenities,
-                ar_General_Information: rest.ar_General_Information,
-                ar_City: rest.ar_City,
-                ar_Region: rest.ar_Region,
-                ar_Average_Temperature: rest.ar_Average_Temperature,
-                ar_Best_Visiting_Season: rest.ar_Best_Visiting_Season,
-                ar_Transportation_Options: rest.ar_Transportation_Options,
-                Entry_Fee: rest.Entry_Fee,
                 Photo_URL: rest.Photo_URL
             };
         })
@@ -153,7 +107,7 @@ const HistoricalSites = async(req,res,next)=>{
         sendResponse( res,constans.RESPONSE_INT_SERVER_ERROR,error.message,{},constans.UNHANDLED_ERROR);
     }
 }
-const RecreationalSites = async(req,res,next)=>{ 
+const RecreationalSites = async(req,res,next)=>{  
     try{
         const {governorateId, recreationalSitesId} = req.params
         const RecreationalSites = await governorateModele.findOne({governorateId})

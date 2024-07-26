@@ -33,7 +33,7 @@ const userSchema = new mongoose.Schema(
             type:String, 
             enum:["mobileApp"]
         },
-        userFav: [String]
+        userFavourite: [String]
     },
     {
         timestamps: true

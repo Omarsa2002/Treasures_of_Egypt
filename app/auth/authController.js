@@ -187,7 +187,7 @@ const checkToken = async (req, res, next) => {
     function extractToken() {
         const token = req.headers['Authorization'] ?? req.headers['authorization'];
         if (token) {
-            return token.split("Treasures_")[1];
+            return token.split("treasures_")[1];
         }
     }
     const token = extractToken();
