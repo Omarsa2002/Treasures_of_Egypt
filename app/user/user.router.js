@@ -8,6 +8,7 @@ router.put("/addtofavourite", verifyToken, userCon.addToFavourite);
 router.put("/removefromfavourite", verifyToken, userCon.removeFromFavourite);
 router.get("/userfavourite", verifyToken, userCon.userFavourite);
 router.get("/recommendations", verifyToken, userCon.recommendations);
+router.put("/updateuserprofile", verifyToken, userCon.updateUser);
 
 
 module.exports = router;

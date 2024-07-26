@@ -4,6 +4,7 @@ const userModel = require('../db/models/userModel.js');
 const governorateModele = require('../db/models/governorateModel');
 const { HistoricalSites } = require("../governorate/governorate.controller.js");
 const CONFIG = require('../../config/config.js');
+const { body } = require("express-validator");
 
 
 const recommendations = async (req, res, nex)=>{
@@ -57,6 +58,22 @@ const recommendations = async (req, res, nex)=>{
         sendResponse(res, constans.RESPONSE_SUCCESS, "done",userRecommends, []);
     }catch(error){
         sendResponse( res,constans.RESPONSE_INT_SERVER_ERROR,error.message,{},constans.UNHANDLED_ERROR);
+    }
+}
+
+const updateUser=async(req,res,next)=>{
+    try {
+        const {userId}=req.user; 
+        if(req.body.email){
+            return sendResponse(res,constans.RESPONSE_BAD_REQUEST,"Not Allow to change Email","",[])
+        } 
+        if(req.body.userName){
+            req.body.userName = req.body.userName; 
+        }
+        const user=await userModel.findOneAndUpdate({userId:userId},{$set:req.body},{runValidators: true})
+        sendResponse(res,constans.RESPONSE_SUCCESS,"user updated success",user.userId,[])
+    } catch (error) {
+        sendResponse(res,constans.RESPONSE_INT_SERVER_ERROR,error.message,"", constans.UNHANDLED_ERROR);
     }
 }
 
@@ -160,5 +177,6 @@ module.exports = {
     addToFavourite,
     removeFromFavourite,
     userFavourite,
-    recommendations
+    recommendations,
+    updateUser
 }
