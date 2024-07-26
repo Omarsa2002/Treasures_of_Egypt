@@ -15,6 +15,7 @@ const client = new OAuth2Client(CONFIG.GOOGLE_CLIENT_ID);
 //-------------------------------------user-------------------------------------//
 const signUp = async(req, res, next) => {
     try {
+        const {lang} = req.query
         const { email, userName, password, gender } = req.body;
         const user = await userModel.findOne({ email: email });
         if (!user) {
@@ -25,19 +26,27 @@ const signUp = async(req, res, next) => {
                 password,
             });
             const confirmLink = "confirm your account";
-            const confirmMessag ="Confirmation Email Send From restaurant Application";
+            const confirmMessag ="Confirmation Email Send From Treasures of Egypt Application";
             const info = await helper.sendConfirmEmail(req,newUser,"auth/confirmemail",confirmLink,confirmMessag);
             if (info) {
-                const savedUser = await newUser.save(); 
-                sendResponse(res,constans.RESPONSE_CREATED,"Done",savedUser.userId,{});
+                const savedUser = await newUser.save();
+                (lang === "en")? 
+                sendResponse(res,constans.RESPONSE_BAD_REQUEST,"Confirm your email ... we've sent a message at your email",{},[]):
+                sendResponse(res,constans.RESPONSE_BAD_REQUEST,"قم بتفعيل ايميلك....تم ارسال رسالة االيك على الايميل",{},[]);
             } else {
-                sendResponse(res,constans.RESPONSE_BAD_REQUEST,"rejected Eamil", [], []);
+                (lang === "en")?
+                sendResponse(res,constans.RESPONSE_BAD_REQUEST,"rejected Eamil", [], []):
+                sendResponse(res,constans.RESPONSE_BAD_REQUEST,"الايمل غير صالح", [], []);
             }
         }else if(user && user.isDeleted){
             await userModel.updateOne({email}, {$set:{isDeleted: false}});
-            sendResponse(res,constans.RESPONSE_CREATED,"Done",user.userId,{});
+            (lang === "en")? 
+            sendResponse(res,constans.RESPONSE_BAD_REQUEST,"Confirm your email ... we've sent a message at your email",{},[]):
+            sendResponse(res,constans.RESPONSE_BAD_REQUEST,"قم بتفعيل ايميلك....تم ارسال رسالة االيك على الايميل",{},[]);
         }else{
-            sendResponse(res,constans.RESPONSE_BAD_REQUEST,"email already exist", "" , []);
+            (lang === "en")?
+            sendResponse(res,constans.RESPONSE_BAD_REQUEST,"email already exist", "" , []):
+            sendResponse(res,constans.RESPONSE_BAD_REQUEST,"هذا الايميل موجود بالفعل", "" , []);
         }
     } catch (error) {
         sendResponse( res,constans.RESPONSE_INT_SERVER_ERROR,error.message,{},constans.UNHANDLED_ERROR);
@@ -47,24 +56,31 @@ const signUp = async(req, res, next) => {
 
 const login = async (req, res, next) => {
     try {
+        const {lang} = req.query
         const { email, password } = req.body;
         const user = await userModel.findOne({ email });
         //..Check if User Exists..//
         if (!user|| user.isDeleted) {
-            return sendResponse(res,constans.RESPONSE_BAD_REQUEST,"Email not found!",{},[]);
+            return (lang === "en")? 
+            sendResponse(res,constans.RESPONSE_BAD_REQUEST,"Email not found!",{},[]):
+            sendResponse(res,constans.RESPONSE_BAD_REQUEST,"هذا الايميل غير مسجل",{},[]);
         }
         //..Compare Passwords..//
         const isPasswordCorrect = await bcrypt.compare(password, user.password);
         if (!isPasswordCorrect) {
-            return sendResponse(res, constans.RESPONSE_BAD_REQUEST, "Wrong password!", {}, []);
+            return (lang === "en")?
+            sendResponse(res, constans.RESPONSE_BAD_REQUEST, "Wrong password!", {}, []):
+            sendResponse(res, constans.RESPONSE_BAD_REQUEST, "كلمة المرور خاطئة", {}, [])
         }
         //..Check if Email is Activated..//
         if (!user.activateEmail) {
             const confirmLink = "confirm your account";
-            const confirmMessag = "Confirmation Email Send From restaurant Application";
+            const confirmMessag = "Confirmation Email Send From Treasures of Egypt Application";
             const result = await helper.sendConfirmEmail(req,user,"auth/confirmemail",confirmLink,confirmMessag);
             if (result) {
-                return sendResponse(res,constans.RESPONSE_BAD_REQUEST,"Confirm your email ... we've sent a message at your email",{},[]);
+                return (lang === "en")? 
+                sendResponse(res,constans.RESPONSE_BAD_REQUEST,"Confirm your email ... we've sent a message at your email",{},[]):
+                sendResponse(res,constans.RESPONSE_BAD_REQUEST,"قم بتفعيل ايميلك....تم ارسال رسالة االيك على الايميل",{},[]);
             }
         }
         //..Generate Access Token..//
@@ -88,7 +104,9 @@ const login = async (req, res, next) => {
             userName:user.userName,
             profileImage:user?.profileImage,
         }
-        return sendResponse(res, constans.RESPONSE_SUCCESS, "Login Succeed", data, []);
+        return (lang === "en")?
+        sendResponse(res, constans.RESPONSE_SUCCESS, "Login Succeed", data, []):
+        sendResponse(res, constans.RESPONSE_SUCCESS, "تم تسجيل الدخول بنجاح", data, []);
     } catch (error) {
         sendResponse( res,constans.RESPONSE_INT_SERVER_ERROR,error.message,{},constans.UNHANDLED_ERROR);
     }
@@ -97,10 +115,13 @@ const login = async (req, res, next) => {
 //-------------------------------------general-------------------------------------//
 const verifyEmail = async(req, res, next) => {
     try {
+        const {lang} = req.query
         const { token } = req.params;
         const decoded = jwt.verify(token, CONFIG.jwt_encryption);
         if (!decoded?.userId) {
-            sendResponse(res,constans.RESPONSE_UNAUTHORIZED,"invaildToken",{},[]);
+            (lang === "en")?
+            sendResponse(res,constans.RESPONSE_UNAUTHORIZED,"invaild Token",{},[]):
+            sendResponse(res,constans.RESPONSE_UNAUTHORIZED,"الرمز المميز غير صالح",{},[]);
         } else {
             const type= "user";
             user = await userModel.findOneAndUpdate(
@@ -108,9 +129,13 @@ const verifyEmail = async(req, res, next) => {
                 { activateEmail: true }
             );
             if (!user) {
-                sendResponse(res,constans.RESPONSE_BAD_REQUEST,"email already confirmed or in-vaild token",type,[]);
+                (lang === "en")?
+                sendResponse(res,constans.RESPONSE_BAD_REQUEST,"email already confirmed or in-vaild token",type,[]):
+                sendResponse(res,constans.RESPONSE_BAD_REQUEST,"الايميل مفعل بالفعل او الرمز المميز غير صالح",type,[]);
             } else {
-                sendResponse(res,constans.RESPONSE_SUCCESS,"Confirmed Succeed",type,[]);
+                (lang === "en")?
+                sendResponse(res,constans.RESPONSE_SUCCESS,"Confirmed Succeed",type,[]):
+                sendResponse(res,constans.RESPONSE_SUCCESS,"تم التفعيل بنجاح",type,[]);
             }
         }
     } catch (error) {
@@ -120,10 +145,13 @@ const verifyEmail = async(req, res, next) => {
 
 const reSendcode = async (req, res, next) => {
     try {
+        const {lang} = req.query
         const { email } = req.body;
         const  user = await userModel.findOne({ email: email });
         if (!user|| user.isDeleted) {
-            sendResponse(res, constans.RESPONSE_BAD_REQUEST, "This email does not exist", {}, []);
+            (lang === "en")?
+            sendResponse(res, constans.RESPONSE_BAD_REQUEST, "This email does not exist", {}, []):
+            sendResponse(res, constans.RESPONSE_BAD_REQUEST, "هذا الايميل غير موجود", {}, []);
         } else {
             const code = Math.floor(10000 + Math.random() * 90000);
             const info = helper.sendEmail( user, "recovery code", code);
@@ -132,7 +160,9 @@ const reSendcode = async (req, res, next) => {
                     { email },
                     { $set: { recoveryCode: code, recoveryCodeDate: Date.now() } }
                 );
-                sendResponse(res, constans.RESPONSE_SUCCESS, `Recovery code resent to ${email}`, {}, [] );
+                (lang === "en")?
+                sendResponse(res, constans.RESPONSE_SUCCESS, `Recovery code resent to ${email}`, {}, [] ):
+                sendResponse(res, constans.RESPONSE_SUCCESS, `${email}تم اعادة ارسال الرمز الى `, {}, [] );
             }
         }
     } catch (error) {
@@ -142,10 +172,13 @@ const reSendcode = async (req, res, next) => {
 
 const forgetPassword = async (req, res, next) => {
     try {
+        const {lang} = req.query
         const {email} = req.body;
         const  user = await userModel.findOne({ email: email });
         if (!user || user.isDeleted) {
-            sendResponse(res, constans.RESPONSE_BAD_REQUEST, "This email does not exist", {}, []);
+            (lang === "en")?
+            sendResponse(res, constans.RESPONSE_BAD_REQUEST, "This email does not exist", {}, []):
+            sendResponse(res, constans.RESPONSE_BAD_REQUEST, "هذا الايميل غير موجود", {}, []);
         } else {
             const code = Math.floor(10000 + Math.random() * 90000);
             const setPasswordMessag = "an update password email was sent from restaurant Application";
@@ -155,7 +188,9 @@ const forgetPassword = async (req, res, next) => {
                     { email },
                     { $set: { recoveryCode: code, recoveryCodeDate: Date.now() } }
                 );
-                sendResponse(res, constans.RESPONSE_SUCCESS, `we sent you an email at ${email}`, {}, []);
+                (lang === "en")?
+                sendResponse(res, constans.RESPONSE_SUCCESS, `we sent you an email at ${email}`, {}, []):
+                sendResponse(res, constans.RESPONSE_SUCCESS, `${email} لقد ارسلنا لك رسالة على`, {}, []);
             }
         }
     } catch (error) {
@@ -166,6 +201,7 @@ const forgetPassword = async (req, res, next) => {
 
 const setPassword = async (req, res, next) => {
     try {
+        const {lang} = req.query
         const { password, code, email } = req.body;
         const  user = await userModel.findOne({ email });
         if (user.recoveryCode === code && validateExpiry(user.recoveryCodeDate) && code) {
@@ -174,9 +210,13 @@ const setPassword = async (req, res, next) => {
                 { userId: user.userId },
                 { $set: { recoveryCode: "",encryptedPassword } }
             );
-            sendResponse(res, constans.RESPONSE_SUCCESS, "Set new password successful", {}, []);
+            (lang === "en")?
+            sendResponse(res, constans.RESPONSE_SUCCESS, "Set new password successful", {}, []):
+            sendResponse(res, constans.RESPONSE_SUCCESS, "تم تغير كلمة المرور بنجاح", {}, []);
         } else {
-            sendResponse( res, constans.RESPONSE_BAD_REQUEST, "Invalid or expired code", "", []);
+            (lang === "en")?
+            sendResponse( res, constans.RESPONSE_BAD_REQUEST, "Invalid or expired code", "", []):
+            sendResponse( res, constans.RESPONSE_BAD_REQUEST, "الرمز غير صالح او منتهي الصلاحية", "", []);
         }
     } catch (error) {
         sendResponse( res,constans.RESPONSE_INT_SERVER_ERROR,error.message,{},constans.UNHANDLED_ERROR);;
@@ -208,21 +248,28 @@ const checkToken = async (req, res, next) => {
 //..................logout............................//
 const signOut=async(req,res,next)=>{ 
     try {
+        const {lang} = req.query
         if(req.headers["Authorization"]||req.headers["authorization"]){
             const token =req.headers["Authorization"] || req.headers["authorization"].split("treasures_")[1];
             const deletetoken=await tokenSchema.findOneAndDelete({token:token})
             if(deletetoken){
                 delete req.headers['Authorization']||req.headers['authorization']
-                sendResponse(res,constans.RESPONSE_SUCCESS, "Sign-Out successfully", '', []);
+                (lang === "en")?
+                sendResponse(res,constans.RESPONSE_SUCCESS, "Sign-Out successfully", '', []):
+                sendResponse(res,constans.RESPONSE_SUCCESS, "تم تسجيل الخروج بنجاح", '', []);
             }
             else{
-                sendResponse(res,constans.RESPONSE_UNAUTHORIZED, "Unauthorized", '', []);
+                (lang === "en")?
+                sendResponse(res,constans.RESPONSE_UNAUTHORIZED, "Unauthorized", '', []):
+                sendResponse(res,constans.RESPONSE_UNAUTHORIZED, "غير مصرح", '', []);
             }
         }
         else{
             await tokenSchema.findOneAndDelete({token:req.cookies.token})
             res.clearCookie("token");   
-            sendResponse(res,constans.RESPONSE_SUCCESS, "Sign-Out successfully", '', []);
+            (lang === "en")?
+            sendResponse(res,constans.RESPONSE_SUCCESS, "Sign-Out successfully", '', []):
+            sendResponse(res,constans.RESPONSE_SUCCESS, "تم تسجيل الخروج بنجاح", '', []);
         }
     } catch (error) {
         sendResponse(res,constans.RESPONSE_INT_SERVER_ERROR,error.message,"", constans.UNHANDLED_ERROR);
