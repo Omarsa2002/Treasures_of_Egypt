@@ -21,8 +21,9 @@ const recommendations = async (req, res, nex)=>{
         }
         const { userId } = req.user;
         const {lang} = req.query
+        const online = `https://treasures-of-egypt.onrender.com${CONFIG.BASEURL}`
         const local = `http://localhost:${CONFIG.port}`;
-        const url = `${local}${CONFIG.BASEURL}/user/userfavourite`;
+        const url = `${online}${CONFIG.BASEURL}/user/userfavourite`;
         const fav = await fetch(url, {
             method: 'GET',
             headers: {
@@ -41,6 +42,11 @@ const recommendations = async (req, res, nex)=>{
             data.data.Recreational.forEach(site=>{
                 (lang === "en")? dataArray.push(site.en_Site_Name):dataArray.push(site.ar_Site_Name);
             });
+        if(!dataArray){
+            return (lang === 'en')?
+            sendResponse(res, constans.RESPONSE_NOT_FOUND, "there is no recommendations for you",{}, []):
+            sendResponse(res, constans.RESPONSE_NOT_FOUND, "لا يوجد لا اي ترشيحات",{}, []);
+        }
         const recommendsUrl = `https://egypt-treasure.onrender.com/recommend?lang=${lang}`
         const recommends = await fetch(recommendsUrl, {
             method: 'post',
@@ -63,15 +69,20 @@ const recommendations = async (req, res, nex)=>{
 
 const updateUser=async(req,res,next)=>{
     try {
+        const {lang} = req.query
         const {userId}=req.user; 
         if(req.body.email){
-            return sendResponse(res,constans.RESPONSE_BAD_REQUEST,"Not Allow to change Email","",[])
+            return (lang === 'en')?
+            sendResponse(res,constans.RESPONSE_BAD_REQUEST,"Not Allow to change Email","",[]):
+            sendResponse(res,constans.RESPONSE_BAD_REQUEST,"غير مسموح لك بتغيير الايميل","",[]);
         } 
         if(req.body.userName){
             req.body.userName = req.body.userName; 
         }
         const user=await userModel.findOneAndUpdate({userId:userId},{$set:req.body},{runValidators: true})
-        sendResponse(res,constans.RESPONSE_SUCCESS,"user updated success",user.userId,[])
+        (lang === 'en')?
+        sendResponse(res,constans.RESPONSE_SUCCESS,"user updated success",user.userId,[]):
+        sendResponse(res,constans.RESPONSE_SUCCESS,"تم التحديث بنجاح",user.userId,[])
     } catch (error) {
         sendResponse(res,constans.RESPONSE_INT_SERVER_ERROR,error.message,"", constans.UNHANDLED_ERROR);
     }
@@ -79,13 +90,18 @@ const updateUser=async(req,res,next)=>{
 
 const addToFavourite = async (req, res, next)=>{
     try{
+        const {lang} = req.query
         const {userId} = req.user;
         const {siteId} = req.body;
         if(siteId){
             const user = await userModel.findOneAndUpdate({userId},{$addToSet:{userFavourite:siteId}},{new:true});
-            sendResponse(res,constans.RESPONSE_SUCCESS,"Added to favourite",{},[])
+            (lang === 'en')?
+            sendResponse(res,constans.RESPONSE_SUCCESS,"Added to favourite",{},[]):
+            sendResponse(res,constans.RESPONSE_SUCCESS,"تم الاضافة الى المفضلة",{},[])
         }else{
-            sendResponse(res,constans.RESPONSE_FORBIDDEN,"No sites to add to favourite",{},[])
+            (lang === 'en')?
+            sendResponse(res,constans.RESPONSE_FORBIDDEN,"No sites to add to favourite",{},[]):
+            sendResponse(res,constans.RESPONSE_FORBIDDEN,"لا يمكن الاضافة الى المفضلة",{},[])
         }
     }catch(error){
         sendResponse( res,constans.RESPONSE_INT_SERVER_ERROR,error.message,{},constans.UNHANDLED_ERROR);
@@ -94,13 +110,18 @@ const addToFavourite = async (req, res, next)=>{
 
 const removeFromFavourite = async (req, res, next)=>{
     try{
+        const {lang} = req.query
         const {userId} = req.user;
         const {siteId} = req.body;
         if(siteId){
             const user = await userModel.findOneAndUpdate({userId},{$pull:{userFavourite:siteId}},{new:true});
-            sendResponse(res,constans.RESPONSE_SUCCESS,"removed to favourite",{},[])
+            (lang === 'en')?
+            sendResponse(res,constans.RESPONSE_SUCCESS,"removed from favourite",{},[]):
+            sendResponse(res,constans.RESPONSE_SUCCESS,"تم الازالة من المفضلة",{},[])
         }else{
-            sendResponse(res,constans.RESPONSE_FORBIDDEN,"No sites to remove from favourite",{},[])
+            (lang === 'en')?
+            sendResponse(res,constans.RESPONSE_FORBIDDEN,"No sites to remove from favourite",{},[]):
+            sendResponse(res,constans.RESPONSE_FORBIDDEN,"لا يمكن الازالة من المفضلة",{},[])
         }
     }catch(error){
         sendResponse( res,constans.RESPONSE_INT_SERVER_ERROR,error.message,{},constans.UNHANDLED_ERROR);
@@ -110,6 +131,7 @@ const removeFromFavourite = async (req, res, next)=>{
 
 const userFavourite = async (req, res, next)=>{
     try{
+        const {lang} = req.query
         const {userId} = req.user;
         const user = await userModel.findOne({userId}).select('userFavourite -_id')
         if(user){
@@ -152,7 +174,9 @@ const userFavourite = async (req, res, next)=>{
             })
             sendResponse(res, constans.RESPONSE_SUCCESS, "done",{Historical: Historical, Recreational: Recreational}, []);
         }else{
-            sendResponse(res,constans.RESPONSE_NOT_FOUND,"No Favourite for you ",{},[])
+            (lang === 'en')?
+            sendResponse(res,constans.RESPONSE_NOT_FOUND,"No Favourite for you ",{},[]):
+            sendResponse(res,constans.RESPONSE_NOT_FOUND,"لم تقم بالاضافة الى المفضلة حتى الان ",{},[])
         }
     }catch(error){
         sendResponse( res,constans.RESPONSE_INT_SERVER_ERROR,error.message,{},constans.UNHANDLED_ERROR);

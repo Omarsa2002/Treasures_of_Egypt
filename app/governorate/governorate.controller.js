@@ -68,10 +68,9 @@ const HistoricalSites = async(req,res,next)=>{
         const HistoricalSites = await governorateModele.findOne({governorateId})
         const data = HistoricalSites.HistoricalSites
         let singleData = data.filter(site=>{return site.siteId === historicalSitesId})
-        console.log(singleData);
         let updateData = (data)=>{
             const { _id, ...rest } = data[0].toObject({getters: true});
-            return {
+            return (lang === 'en')? {
                 Location: rest.Location,
                 siteId: rest.siteId,
                 en_Site_Name: rest.en_Site_Name,
@@ -86,6 +85,11 @@ const HistoricalSites = async(req,res,next)=>{
                 en_Average_Temperature: rest.en_Average_Temperature, 
                 en_Best_Visiting_Season: rest.en_Best_Visiting_Season,
                 en_Transportation_Options: rest.en_Transportation_Options, 
+                Entry_Fee: rest.Entry_Fee  ,
+                Photo_URL: rest.Photo_URL, 
+            }:{
+                Location: rest.Location,
+                siteId: rest.siteId,
                 ar_Site_Name: rest.ar_Site_Name,  
                 ar_adress: rest.ar_adress,  
                 ar_Historical_Period: rest.ar_Historical_Period,
@@ -100,7 +104,7 @@ const HistoricalSites = async(req,res,next)=>{
                 ar_Transportation_Options: rest.ar_Transportation_Options , 
                 Entry_Fee: rest.Entry_Fee  ,
                 Photo_URL: rest.Photo_URL, 
-            };
+            }
         }
         sendResponse(res,constans.RESPONSE_SUCCESS,"done",updateData(singleData),[]);
     }catch(error){
@@ -113,10 +117,9 @@ const RecreationalSites = async(req,res,next)=>{
         const RecreationalSites = await governorateModele.findOne({governorateId})
         const data = RecreationalSites.RecreationalSites
         let singleData = data.filter(site=>{return site.siteId === recreationalSitesId})
-        console.log(singleData);
         let updateData = (data)=>{
             const { _id, ...rest } = data[0].toObject({getters: true});
-            return {
+            return (lang === 'en')? {
                 Location: rest.Location,
                 siteId: rest.siteId,
                 en_Site_Name: rest.en_Site_Name,
@@ -132,6 +135,11 @@ const RecreationalSites = async(req,res,next)=>{
                 en_Average_Temperature: rest.en_Average_Temperature,
                 en_Best_Visiting_Season: rest.en_Best_Visiting_Season,
                 en_Transportation_Options: rest.en_Transportation_Options,
+                Entry_Fee: rest.Entry_Fee,
+                Photo_URL: rest.Photo_URL
+            }:{
+                Location: rest.Location,
+                siteId: rest.siteId,
                 ar_Site_Name: rest.ar_Site_Name,
                 ar_adress: rest.ar_adress,
                 ar_Type_of_Activity: rest.ar_Type_of_Activity,
@@ -147,7 +155,7 @@ const RecreationalSites = async(req,res,next)=>{
                 ar_Transportation_Options: rest.ar_Transportation_Options,
                 Entry_Fee: rest.Entry_Fee,
                 Photo_URL: rest.Photo_URL
-            };
+            }
         }
         sendResponse(res,constans.RESPONSE_SUCCESS,"done",updateData(singleData),[]);
     }catch(error){
