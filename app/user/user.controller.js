@@ -21,7 +21,7 @@ const recommendations = async (req, res, nex)=>{
         }
         const { userId } = req.user;
         const {lang} = req.query
-        const online = `https://treasures-of-egypt.onrender.com${CONFIG.BASEURL}`
+        const online = `https://treasures-of-egypt.onrender.com`
         const local = `http://localhost:${CONFIG.port}`;
         const url = `${online}${CONFIG.BASEURL}/user/userfavourite`;
         const fav = await fetch(url, {
