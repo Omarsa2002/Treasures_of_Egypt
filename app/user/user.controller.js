@@ -42,7 +42,7 @@ const recommendations = async (req, res, nex)=>{
             data.data.Recreational.forEach(site=>{
                 (lang === "en")? dataArray.push(site.en_Site_Name):dataArray.push(site.ar_Site_Name);
             });
-        if(!dataArray){
+        if(!dataArray.length){
             return (lang === 'en')?
             sendResponse(res, constans.RESPONSE_NOT_FOUND, "there is no recommendations for you",{}, []):
             sendResponse(res, constans.RESPONSE_NOT_FOUND, "لا يوجد لا اي ترشيحات",{}, []);
