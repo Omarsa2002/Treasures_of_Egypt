@@ -71,18 +71,17 @@ const updateUser=async(req,res,next)=>{
     try {
         const {lang} = req.query
         const {userId}=req.user; 
-        if(req.body.email){
-            return (lang === 'en')?
-            sendResponse(res,constans.RESPONSE_BAD_REQUEST,"Not Allow to change Email","",[]):
-            sendResponse(res,constans.RESPONSE_BAD_REQUEST,"غير مسموح لك بتغيير الايميل","",[]);
-        } 
         if(req.body.userName){
             req.body.userName = req.body.userName; 
         }
-        const user=await userModel.findOneAndUpdate({userId:userId},{$set:req.body},{runValidators: true})
+        const user = await userModel.findOneAndUpdate({userId},{$set:req.body},{runValidators: true})
+        if (!user) {
+            console.log("User not found");
+            return sendResponse(res, constans.RESPONSE_NOT_FOUND, "User not found", "", []);
+        }
         (lang === 'en')?
-        sendResponse(res,constans.RESPONSE_SUCCESS,"user updated success",user.userId,[]):
-        sendResponse(res,constans.RESPONSE_SUCCESS,"تم التحديث بنجاح",user.userId,[])
+        sendResponse(res,constans.RESPONSE_SUCCESS,"user updated success",userId,[]):
+        sendResponse(res,constans.RESPONSE_SUCCESS,"تم التحديث بنجاح",userId,[])
     } catch (error) {
         sendResponse(res,constans.RESPONSE_INT_SERVER_ERROR,error.message,"", constans.UNHANDLED_ERROR);
     }
