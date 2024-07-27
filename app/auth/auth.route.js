@@ -9,7 +9,7 @@ router.post('/user/login', authController.login);
 
 
 //------------general--------------//
-router.get('/confirmemail/:token', authController.verifyEmail);
+router.post('/confirmemail', authController.verifyEmail);
 router.put("/setPassword", authController.setPassword);
 router.post("/forgetPassword", authController.forgetPassword);
 router.post("/istokenvalid", authController.checkToken)

@@ -25,11 +25,16 @@ const signUp = async(req, res, next) => {
                 userName,
                 password,
             });
-            const confirmLink = "confirm your account";
+            //const confirmLink = "confirm your account";
             const confirmMessag ="Confirmation Email Send From Treasures of Egypt Application";
-            const info = await helper.sendConfirmEmail(req,newUser,"auth/confirmemail",confirmLink,confirmMessag);
+            const code = Math.floor(10000 + Math.random() * 90000);
+            const info = await helper.sendConfirmEmail(req,newUser,"","",confirmMessag,code);
             if (info) {
                 const savedUser = await newUser.save();
+                await userModel.updateOne(
+                    { email },
+                    { $set: { recoveryCode: code, recoveryCodeDate: Date.now() } }
+                );
                 (lang === "en")? 
                 sendResponse(res,constans.RESPONSE_BAD_REQUEST,"Confirm your email ... we've sent a message at your email",{},[]):
                 sendResponse(res,constans.RESPONSE_BAD_REQUEST,"قم بتفعيل ايميلك....تم ارسال رسالة االيك على الايميل",{},[]);
@@ -74,10 +79,14 @@ const login = async (req, res, next) => {
         }
         //..Check if Email is Activated..//
         if (!user.activateEmail) {
-            const confirmLink = "confirm your account";
-            const confirmMessag = "Confirmation Email Send From Treasures of Egypt Application";
-            const result = await helper.sendConfirmEmail(req,user,"auth/confirmemail",confirmLink,confirmMessag);
+            const confirmMessag ="Confirmation Email Send From Treasures of Egypt Application";
+            const code = Math.floor(10000 + Math.random() * 90000);
+            const result = await helper.sendConfirmEmail(req,user,"","",confirmMessag,code);
             if (result) {
+                await userModel.updateOne(
+                    { email },
+                    { $set: { recoveryCode: code, recoveryCodeDate: Date.now() } }
+                );
                 return (lang === "en")? 
                 sendResponse(res,constans.RESPONSE_BAD_REQUEST,"Confirm your email ... we've sent a message at your email",{},[]):
                 sendResponse(res,constans.RESPONSE_BAD_REQUEST,"قم بتفعيل ايميلك....تم ارسال رسالة االيك على الايميل",{},[]);
@@ -116,28 +125,49 @@ const login = async (req, res, next) => {
 const verifyEmail = async(req, res, next) => {
     try {
         const {lang} = req.query
-        const { token } = req.params;
-        const decoded = jwt.verify(token, CONFIG.jwt_encryption);
-        if (!decoded?.userId) {
+
+        const { code, email } = req.body;
+        const  user = await userModel.findOne({ email , activateEmail: false});
+        if (!user) {
             (lang === "en")?
-            sendResponse(res,constans.RESPONSE_UNAUTHORIZED,"invaild Token",{},[]):
-            sendResponse(res,constans.RESPONSE_UNAUTHORIZED,"الرمز المميز غير صالح",{},[]);
-        } else {
-            const type= "user";
-            user = await userModel.findOneAndUpdate(
-                { userId: decoded.userId, activateEmail: false },
-                { activateEmail: true }
+            sendResponse(res,constans.RESPONSE_BAD_REQUEST,"email already confirmed or in-code",{},[]):
+            sendResponse(res,constans.RESPONSE_BAD_REQUEST,"الايميل مفعل بالفعل او الرمز غير صالح",{},[]);
+        } else if (user.recoveryCode === code && validateExpiry(user.recoveryCodeDate) && code) {
+            await userModel.updateOne(
+                { userId: user.userId },
+                { $set: { recoveryCode: "", activateEmail: true} }
             );
-            if (!user) {
-                (lang === "en")?
-                sendResponse(res,constans.RESPONSE_BAD_REQUEST,"email already confirmed or in-vaild token",type,[]):
-                sendResponse(res,constans.RESPONSE_BAD_REQUEST,"الايميل مفعل بالفعل او الرمز المميز غير صالح",type,[]);
-            } else {
-                (lang === "en")?
-                sendResponse(res,constans.RESPONSE_SUCCESS,"Confirmed Succeed",type,[]):
-                sendResponse(res,constans.RESPONSE_SUCCESS,"تم التفعيل بنجاح",type,[]);
-            }
+            (lang === "en")?
+            sendResponse(res,constans.RESPONSE_SUCCESS,"Confirmed Succeed",{},[]):
+            sendResponse(res,constans.RESPONSE_SUCCESS,"تم التفعيل بنجاح",{},[]);
+        } else {
+            (lang === "en")?
+            sendResponse( res, constans.RESPONSE_BAD_REQUEST, "Invalid or expired code", "", []):
+            sendResponse( res, constans.RESPONSE_BAD_REQUEST, "الرمز غير صالح او منتهي الصلاحية", "", []);
         }
+
+        // const { token } = req.params;
+        // const decoded = jwt.verify(token, CONFIG.jwt_encryption);
+        // if (!decoded?.userId) {
+        //     (lang === "en")?
+        //     sendResponse(res,constans.RESPONSE_UNAUTHORIZED,"invaild Token",{},[]):
+        //     sendResponse(res,constans.RESPONSE_UNAUTHORIZED,"الرمز المميز غير صالح",{},[]);
+        // } else {
+        //     const type= "user";
+        //     user = await userModel.findOneAndUpdate(
+        //         { userId: decoded.userId, activateEmail: false },
+        //         { activateEmail: true }
+        //     );
+        //     if (!user) {
+        //         (lang === "en")?
+        //         sendResponse(res,constans.RESPONSE_BAD_REQUEST,"email already confirmed or in-vaild token",type,[]):
+        //         sendResponse(res,constans.RESPONSE_BAD_REQUEST,"الايميل مفعل بالفعل او الرمز المميز غير صالح",type,[]);
+        //     } else {
+        //         (lang === "en")?
+        //         sendResponse(res,constans.RESPONSE_SUCCESS,"Confirmed Succeed",type,[]):
+        //         sendResponse(res,constans.RESPONSE_SUCCESS,"تم التفعيل بنجاح",type,[]);
+        //     }
+        // }
     } catch (error) {
         sendResponse( res,constans.RESPONSE_INT_SERVER_ERROR,error.message,{},constans.UNHANDLED_ERROR);
     }
