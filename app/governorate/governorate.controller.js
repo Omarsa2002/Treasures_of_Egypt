@@ -11,7 +11,7 @@ const { array } = require("joi");
 
 const allGovernorate = async(req,res,next)=>{
     try{
-        const governorates = await governorateModele.find().select("governorateName governorateId -_id").sort({"governorateName": 1});
+        const governorates = await governorateModele.find().select("governorateName governorateId governorateArName governorateLogo -_id").sort({"governorateName": 1});
         sendResponse(res,constans.RESPONSE_SUCCESS,"done",governorates,[]);
     }catch(error){
         sendResponse( res,constans.RESPONSE_INT_SERVER_ERROR,error.message,{},constans.UNHANDLED_ERROR);
