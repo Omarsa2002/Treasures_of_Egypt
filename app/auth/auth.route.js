@@ -15,6 +15,7 @@ router.post("/forgetPassword", authController.forgetPassword);
 router.post("/istokenvalid", authController.checkToken)
 router.post("/reSendcode", rateLimiter, authController.reSendcode);
 router.post("/logout", authController.signOut)
+router.get("/checkToken", authController.checkToken)
 
 
 module.exports = router;

@@ -315,5 +315,6 @@ module.exports = {
     forgetPassword,
     setPassword,
     checkToken,
-    signOut
+    signOut,
+    checkToken
 }
