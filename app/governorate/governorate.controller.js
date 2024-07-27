@@ -64,6 +64,7 @@ const allRecreationalSites = async(req,res,next)=>{
 }
 const HistoricalSites = async(req,res,next)=>{
     try{
+        const {lang} = req.query
         const {governorateId, historicalSitesId} = req.params
         const HistoricalSites = await governorateModele.findOne({governorateId})
         const data = HistoricalSites.HistoricalSites
@@ -113,6 +114,7 @@ const HistoricalSites = async(req,res,next)=>{
 }
 const RecreationalSites = async(req,res,next)=>{  
     try{
+        const {lang} = req.query
         const {governorateId, recreationalSitesId} = req.params
         const RecreationalSites = await governorateModele.findOne({governorateId})
         const data = RecreationalSites.RecreationalSites
