@@ -45,15 +45,39 @@ const allHistoricalSites = async(req,res,next)=>{
         let updateData = data.map(site =>{
             const { _id, ...rest } = site.toObject({getters: true});
             return (lang === 'en')? {
+                Location: rest.Location,
                 siteId: rest.siteId,
                 Site_Name: rest.en_Site_Name,
+                adress: rest.en_adress,
+                Historical_Period: rest.en_Historical_Period,
+                Description: rest.en_Description,  
                 Opening_Hours: rest.en_Opening_Hours,
-                Photo_URL: rest.Photo_URL
+                Visitor_Statistics: rest.en_Visitor_Statistics,
+                Nearby_Amenities: rest.en_Nearby_Amenities, 
+                City: rest.en_City, 
+                Region: rest.en_Region,
+                Average_Temperature: rest.en_Average_Temperature, 
+                Best_Visiting_Season: rest.en_Best_Visiting_Season,
+                Transportation_Options: rest.en_Transportation_Options, 
+                Entry_Fee: rest.Entry_Fee  ,
+                Photo_URL: rest.Photo_URL, 
             }:{
+                Location: rest.Location,
                 siteId: rest.siteId,
-                Site_Name: rest.ar_Site_Name,
-                Opening_Hours: rest.ar_Opening_Hours,
-                Photo_URL: rest.Photo_URL
+                Site_Name: rest.ar_Site_Name,  
+                adress: rest.ar_adress,  
+                Historical_Period: rest.ar_Historical_Period,
+                Description: rest.ar_Description,
+                Opening_Hours: rest.ar_Opening_Hours,  
+                Visitor_Statistics: rest.ar_Visitor_Statistics,
+                Nearby_Amenities: rest.ar_Nearby_Amenities,
+                City: rest.ar_City ,
+                Region: rest.ar_Region,
+                Average_Temperature: rest.ar_Average_Temperature,  
+                Best_Visiting_Season: rest.ar_Best_Visiting_Season , 
+                Transportation_Options: rest.ar_Transportation_Options , 
+                Entry_Fee: rest.Entry_Fee  ,
+                Photo_URL: rest.Photo_URL,
             }
         })
         sendResponse(res,constans.RESPONSE_SUCCESS,"done",updateData,[]);
@@ -71,14 +95,40 @@ const allRecreationalSites = async(req,res,next)=>{
         let updateData = data.map(site =>{
             const { _id, ...rest } = site.toObject({getters: true});
             return (lang === 'en')? {
+                Location: rest.Location,
                 siteId: rest.siteId,
                 Site_Name: rest.en_Site_Name,
+                adress: rest.en_adress,
+                Type_of_Activity: rest.en_Type_of_Activity,
+                Description: rest.en_Description,
                 Opening_Hours: rest.en_Opening_Hours,
+                Visitor_Statistics: rest.en_Visitor_Statistics,
+                Nearby_Amenities: rest.en_Nearby_Amenities,
+                General_Information: rest.en_General_Information,
+                City: rest.en_City,
+                Region: rest.en_Region,
+                Average_Temperature: rest.en_Average_Temperature,
+                Best_Visiting_Season: rest.en_Best_Visiting_Season,
+                Transportation_Options: rest.en_Transportation_Options,
+                Entry_Fee: rest.Entry_Fee,
                 Photo_URL: rest.Photo_URL
             }:{
+                Location: rest.Location,
                 siteId: rest.siteId,
                 Site_Name: rest.ar_Site_Name,
+                adress: rest.ar_adress,
+                Type_of_Activity: rest.ar_Type_of_Activity,
+                Description: rest.ar_Description,
                 Opening_Hours: rest.ar_Opening_Hours,
+                Visitor_Statistics: rest.ar_Visitor_Statistics,
+                Nearby_Amenities: rest.ar_Nearby_Amenities,
+                General_Information: rest.ar_General_Information,
+                City: rest.ar_City,
+                Region: rest.ar_Region,
+                Average_Temperature: rest.ar_Average_Temperature,
+                Best_Visiting_Season: rest.ar_Best_Visiting_Season,
+                Transportation_Options: rest.ar_Transportation_Options,
+                Entry_Fee: rest.Entry_Fee,
                 Photo_URL: rest.Photo_URL
             }
         })
