@@ -9,6 +9,8 @@ const governorateSchema = new mongoose.Schema(
         governorateName: String,
         governorateId: String,
         governorateArName: String,
+        en_Description: String,
+        ar_Description: String,
         governorateLogo: String,
         HistoricalSites: [
             {

@@ -12,16 +12,18 @@ const { array } = require("joi");
 const allGovernorate = async(req,res,next)=>{
     try{
         const {lang} = req.query
-        const governorates = await governorateModele.find().select("governorateName governorateId governorateArName governorateLogo -_id").sort({"governorateName": 1});
+        const governorates = await governorateModele.find().select("governorateName governorateId governorateArName ar_Description en_Description governorateLogo -_id").sort({"governorateName": 1});
         const data = [];
         governorates.forEach(governorate=>{
             const dataup = (lang === "en") ? {
                 governorateId: governorate.governorateId,
                 governorateName: governorate.governorateName,
+                Description: governorate.en_Description,
                 governorateLogo: governorate.governorateLogo
             }:{
                 governorateId: governorate.governorateId,
                 governorateName: governorate.governorateArName,
+                Description: governorate.ar_Description,
                 governorateLogo: governorate.governorateLogo
             }
             data.push(dataup);
