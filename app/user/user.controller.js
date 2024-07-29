@@ -36,11 +36,9 @@ const recommendations = async (req, res, nex)=>{
         }
         const data = await fav.json();
         const dataArray = [];
-            data.data.Historical.forEach(site=>{
-                (lang === "en")? dataArray.push(site.en_Site_Name):dataArray.push(site.ar_Site_Name);
-            });
-            data.data.Recreational.forEach(site=>{
-                (lang === "en")? dataArray.push(site.en_Site_Name):dataArray.push(site.ar_Site_Name);
+            data.data.forEach(site=>{
+                console.log(site);
+                dataArray.push(site.Site_Name)
             });
         if(!dataArray.length){
             return (lang === 'en')?
