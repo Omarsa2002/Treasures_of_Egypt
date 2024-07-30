@@ -41,9 +41,9 @@ const recommendations = async (req, res, nex)=>{
                 dataArray.push(site.Site_Name)
             });
         if(!dataArray.length){
-            return (lang === 'en')?
-            sendResponse(res, constans.RESPONSE_NOT_FOUND, "there is no recommendations for you",{}, []):
-            sendResponse(res, constans.RESPONSE_NOT_FOUND, "لا يوجد لا اي ترشيحات",{}, []);
+            (lang === "en") ?
+            dataArray.push("Great Pyramid of Giza"):
+            dataArray.push("هرم الجيزة الاكبر")
         }
         const recommendsUrl = `https://egypt-treasure.onrender.com/recommend?lang=${lang}`
         const recommends = await fetch(recommendsUrl, {
@@ -91,10 +91,17 @@ const addToFavourite = async (req, res, next)=>{
         const {userId} = req.user;
         const {siteId} = req.body;
         if(siteId){
-            const user = await userModel.findOneAndUpdate({userId},{$addToSet:{userFavourite:siteId}},{new:true});
-            (lang === 'en')?
-            sendResponse(res,constans.RESPONSE_SUCCESS,"Added to favourite",{},[]):
-            sendResponse(res,constans.RESPONSE_SUCCESS,"تم الاضافة الى المفضلة",{},[])
+            const user = await userModel.findOne({userId})
+            if(user.userFavourite.includes(siteId)){
+                (lang === 'en')?
+                sendResponse(res,constans.RESPONSE_SUCCESS,"Added to favourite already",{},[]):
+                sendResponse(res,constans.RESPONSE_SUCCESS,"تم الاضافة الى المفضلة بلفعل",{},[])
+            }else{
+                await userModel.findOneAndUpdate({userId},{$addToSet:{userFavourite:siteId}},{new:true});
+                (lang === 'en')?
+                sendResponse(res,constans.RESPONSE_SUCCESS,"Added to favourite",{},[]):
+                sendResponse(res,constans.RESPONSE_SUCCESS,"تم الاضافة الى المفضلة",{},[])
+            }
         }else{
             (lang === 'en')?
             sendResponse(res,constans.RESPONSE_FORBIDDEN,"No sites to add to favourite",{},[]):

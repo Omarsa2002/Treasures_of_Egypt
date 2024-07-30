@@ -36,8 +36,8 @@ const signUp = async(req, res, next) => {
                     { $set: { recoveryCode: code, recoveryCodeDate: Date.now() } }
                 );
                 (lang === "en")? 
-                sendResponse(res,constans.RESPONSE_BAD_REQUEST,"Confirm your email ... we've sent a message at your email",{},[]):
-                sendResponse(res,constans.RESPONSE_BAD_REQUEST,"قم بتفعيل ايميلك....تم ارسال رسالة االيك على الايميل",{},[]);
+                sendResponse(res,constans.RESPONSE_SUCCESS,"Confirm your email ... we've sent a message at your email",{},[]):
+                sendResponse(res,constans.RESPONSE_SUCCESS,"قم بتفعيل ايميلك....تم ارسال رسالة االيك على الايميل",{},[]);
             } else {
                 (lang === "en")?
                 sendResponse(res,constans.RESPONSE_BAD_REQUEST,"rejected Eamil", [], []):
@@ -47,7 +47,7 @@ const signUp = async(req, res, next) => {
             await userModel.updateOne({email}, {$set:{isDeleted: false}});
             (lang === "en")? 
             sendResponse(res,constans.RESPONSE_BAD_REQUEST,"Confirm your email ... we've sent a message at your email",{},[]):
-            sendResponse(res,constans.RESPONSE_BAD_REQUEST,"قم بتفعيل ايميلك....تم ارسال رسالة االيك على الايميل",{},[]);
+            sendResponse(res,constans.RESPONSE_BAD_REQUEST,"قم بتفعيل ايميلك....تم ارسال رسالةاليك على الايميل",{},[]);
         }else{
             (lang === "en")?
             sendResponse(res,constans.RESPONSE_BAD_REQUEST,"email already exist", "" , []):
@@ -89,7 +89,7 @@ const login = async (req, res, next) => {
                 );
                 return (lang === "en")? 
                 sendResponse(res,constans.RESPONSE_BAD_REQUEST,"Confirm your email ... we've sent a message at your email",{},[]):
-                sendResponse(res,constans.RESPONSE_BAD_REQUEST,"قم بتفعيل ايميلك....تم ارسال رسالة االيك على الايميل",{},[]);
+                sendResponse(res,constans.RESPONSE_BAD_REQUEST,"قم بتفعيل ايميلك....تم ارسال رسالة اليك على الايميل",{},[]);
             }
         }
         //..Generate Access Token..//

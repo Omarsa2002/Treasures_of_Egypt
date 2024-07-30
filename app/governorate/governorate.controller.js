@@ -8,6 +8,14 @@ const { v4: uuidv4 } = require("uuid");
 const governorateModele = require('../db/models/governorateModel');
 const { array } = require("joi");
 
+//shuffle algorithm
+function randomArray(array){
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
 
 const allGovernorate = async(req,res,next)=>{
     try{
@@ -40,8 +48,7 @@ const allHistoricalSites = async(req,res,next)=>{
         const {governorateId} = req.params
         const HistoricalSites = await governorateModele.findOne({governorateId})
         const data = HistoricalSites.HistoricalSites
-        data.sort((a,b) => {return (a.en_Site_Name > b.en_en_Site_Name) ? 1 : ((b.en_Site_Name > a.en_Site_Name) ? -1 : 0)})
-        //console.log(data);
+        randomArray(data);
         let updateData = data.map(site =>{
             const { _id, ...rest } = site.toObject({getters: true});
             return (lang === 'en')? {
@@ -91,7 +98,7 @@ const allRecreationalSites = async(req,res,next)=>{
         const {governorateId} = req.params
         const RecreationalSites = await governorateModele.findOne({governorateId})
         const data = RecreationalSites.RecreationalSites
-        data.sort((a,b) => {return (a.en_Site_Name > b.en_en_Site_Name) ? 1 : ((b.en_Site_Name > a.en_Site_Name) ? -1 : 0)})
+        randomArray(data);
         let updateData = data.map(site =>{
             const { _id, ...rest } = site.toObject({getters: true});
             return (lang === 'en')? {
