@@ -30,7 +30,7 @@ const recommendations = async (req, res, nex)=>{
         const {lang} = req.query
         const online = `https://treasures-of-egypt.onrender.com`
         const local = `http://localhost:${CONFIG.port}`;
-        const url = `${online}${CONFIG.BASEURL}/user/userfavourite`;
+        const url = `${online}${CONFIG.BASEURL}/user/userfavourite?lang=${lang}`;
         const fav = await fetch(url, {
             method: 'GET',
             headers: {
@@ -43,10 +43,7 @@ const recommendations = async (req, res, nex)=>{
         }
         const data = await fav.json();
         const dataArray = [];
-            data.data.forEach(site=>{
-                console.log(site);
-                dataArray.push(site.Site_Name)
-            });
+        data.data.forEach(site=>{dataArray.push(site.Site_Name)});
         if(!dataArray.length){
             (lang === "en") ?
             dataArray.push("Great Pyramid of Giza"):
