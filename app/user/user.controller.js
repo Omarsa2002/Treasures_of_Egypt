@@ -56,7 +56,7 @@ const recommendations = async (req, res, nex)=>{
                 "Content-Type": "application/json"
             },
             body:JSON.stringify({
-                "places": [...dataArray]
+                "places": dataArray
             })
         });
         if (!recommends.ok) {
