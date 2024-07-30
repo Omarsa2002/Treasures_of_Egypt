@@ -6,6 +6,13 @@ const { HistoricalSites } = require("../governorate/governorate.controller.js");
 const CONFIG = require('../../config/config.js');
 const { body } = require("express-validator");
 
+function randomArray(array){
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
 
 const recommendations = async (req, res, nex)=>{
     try{
@@ -59,7 +66,7 @@ const recommendations = async (req, res, nex)=>{
             throw new Error(`Failed to fetch user recommends: ${recommends.statusText}`);
         }
         const userRecommends = await recommends.json();
-        sendResponse(res, constans.RESPONSE_SUCCESS, "done",userRecommends, []);
+        sendResponse(res, constans.RESPONSE_SUCCESS, "done",randomArray(userRecommends), []);
     }catch(error){
         sendResponse( res,constans.RESPONSE_INT_SERVER_ERROR,error.message,{},constans.UNHANDLED_ERROR);
     }
@@ -95,7 +102,7 @@ const addToFavourite = async (req, res, next)=>{
             if(user.userFavourite.includes(siteId)){
                 (lang === 'en')?
                 sendResponse(res,constans.RESPONSE_SUCCESS,"Added to favourite already",{},[]):
-                sendResponse(res,constans.RESPONSE_SUCCESS,"تم الاضافة الى المفضلة بلفعل",{},[])
+                sendResponse(res,constans.RESPONSE_SUCCESS,"تم الاضافة الى المفضلة بالفعل",{},[])
             }else{
                 await userModel.findOneAndUpdate({userId},{$addToSet:{userFavourite:siteId}},{new:true});
                 (lang === 'en')?
