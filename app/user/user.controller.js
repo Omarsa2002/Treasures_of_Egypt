@@ -63,7 +63,7 @@ const recommendations = async (req, res, nex)=>{
             throw new Error(`Failed to fetch user recommends: ${recommends.statusText}`);
         }
         const userRecommends = await recommends.json();
-        sendResponse(res, constans.RESPONSE_SUCCESS, "done",randomArray(userRecommends), []);
+        sendResponse(res, constans.RESPONSE_SUCCESS, "done",userRecommends, []);
     }catch(error){
         sendResponse( res,constans.RESPONSE_INT_SERVER_ERROR,error.message,{},constans.UNHANDLED_ERROR);
     }
