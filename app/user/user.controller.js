@@ -47,16 +47,17 @@ const recommendations = async (req, res, nex)=>{
         if(!dataArray.length){
             (lang === "en") ?
             dataArray.push("Great Pyramid of Giza"):
-            dataArray.push("هرم الجيزة الاكبر")
+            dataArray.push("هرم الجيزة الأكبر")
         }
-        const recommendsUrl = `https://egypt-treasure.onrender.com/recommend?lang=${lang}`
+        const recommendsUrl = `https://egypt-treasure.onrender.com/places`
         const recommends = await fetch(recommendsUrl, {
             method: 'post',
             headers: {
                 "Content-Type": "application/json"
             },
             body:JSON.stringify({
-                "places": dataArray
+                "places": dataArray,
+                "lang_res": lang
             })
         });
         if (!recommends.ok) {
