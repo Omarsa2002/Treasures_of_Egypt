@@ -46,8 +46,8 @@ const signUp = async(req, res, next) => {
         }else if(user && user.isDeleted){
             await userModel.updateOne({email}, {$set:{isDeleted: false}});
             (lang === "en")? 
-            sendResponse(res,constans.RESPONSE_BAD_REQUEST,"Confirm your email ... we've sent a message at your email",{},[]):
-            sendResponse(res,constans.RESPONSE_BAD_REQUEST,"قم بتفعيل ايميلك....تم ارسال رسالةاليك على الايميل",{},[]);
+            sendResponse(res,constans.RESPONSE_SUCCESS,"Confirm your email ... we've sent a message at your email",{},[]):
+            sendResponse(res,constans.RESPONSE_SUCCESS,"قم بتفعيل ايميلك....تم ارسال رسالةاليك على الايميل",{},[]);
         }else{
             (lang === "en")?
             sendResponse(res,constans.RESPONSE_BAD_REQUEST,"email already exist", "" , []):
