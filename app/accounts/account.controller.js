@@ -4,6 +4,7 @@ const tokenSchema = require("../auth/token.schema.js");
 const constants = require("../utils/constants.js");
 const bcrypt = require('bcrypt');
 const CONFIG = require('../../config/config.js');
+const { userFavourite } = require("../user/user.controller.js");
 
 
 
@@ -16,7 +17,7 @@ const deleteAccount = async (req, res, next)=>{
         const {lang} = req.query
         const {userId}=req.user;
         const token=req.headers.authorization.split("treasures_")[1]
-        await userModel.updateOne({userId}, {$set:{isDeleted: true}})
+        await userModel.updateOne({userId}, {$set:{isDeleted: true, userFavourite: []}})
         await tokenSchema.deleteOne({token});
         (lang === "en")? 
         sendResponse(res, constants.RESPONSE_SUCCESS, "account is  deleted", '', [] ):
