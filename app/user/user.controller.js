@@ -99,8 +99,8 @@ const addToFavourite = async (req, res, next)=>{
             const user = await userModel.findOne({userId})
             if(user.userFavourite.includes(siteId)){
                 (lang === 'en')?
-                sendResponse(res,constans.RESPONSE_SUCCESS,"Added to favourite already",{},[]):
-                sendResponse(res,constans.RESPONSE_SUCCESS,"تم الاضافة الى المفضلة بالفعل",{},[])
+                sendResponse(res,constans.RESPONSE_FORBIDDEN,"Added to favourite already",{},[]):
+                sendResponse(res,constans.RESPONSE_FORBIDDEN,"تم الاضافة الى المفضلة بالفعل",{},[])
             }else{
                 await userModel.findOneAndUpdate({userId},{$addToSet:{userFavourite:siteId}},{new:true});
                 (lang === 'en')?

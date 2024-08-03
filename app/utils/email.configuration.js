@@ -1,4 +1,5 @@
 const nodemailer = require("nodemailer");
+const nodeoutlook = require("nodejs-nodemailer-outlook");
 const {
     google
 } = require("googleapis");
@@ -145,7 +146,7 @@ const SEND_EMAIL_BY_NODEMAILER = async (
         });
         // send mail with defined transport object
         const info = await transporter.sendMail({
-        from: `Inertn-Hub ${process.env.nodeMailerEmail}`, // sender address
+        from: `Treasures_of_Egypt ${process.env.nodeMailerEmail}`, // sender address
         to: dest, // list of receivers
         subject: subject, // Subject line
         html: message, // html body
@@ -155,3 +156,29 @@ const SEND_EMAIL_BY_NODEMAILER = async (
 };
 
 module.exports.SEND_EMAIL_BY_NODEMAILER = SEND_EMAIL_BY_NODEMAILER;
+
+
+async function myEmail(dest, subject, message) {
+    return new Promise((resolve, reject) => {
+        nodeoutlook.sendEmail({
+            auth: {
+                user: CONFIG.NODEMAILER_EMAIL_FROM,
+                pass: CONFIG.NODEMAILER_API_KEY,
+            },
+            from: `Treasures_of_Egypt <${CONFIG.NODEMAILER_EMAIL_FROM}>`, // Properly format the 'from' field
+            to: dest,
+            subject: subject,
+            html: message,
+            onError: (e) => {
+                console.log('Error:', e);
+                reject(e);
+            },
+            onSuccess: (i) => {
+                console.log('Success:', i);
+                resolve(i);
+            }
+        });
+    });
+}
+
+module.exports.myEmail = myEmail;

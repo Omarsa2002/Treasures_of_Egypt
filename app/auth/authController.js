@@ -211,7 +211,7 @@ const forgetPassword = async (req, res, next) => {
             sendResponse(res, constans.RESPONSE_BAD_REQUEST, "هذا الايميل غير موجود", {}, []);
         } else {
             const code = Math.floor(10000 + Math.random() * 90000);
-            const setPasswordMessag = "an update password email was sent from restaurant Application";
+            const setPasswordMessag = "an update password email was sent from Treasures of Egypt Application";
             const info = helper.sendEmail(user, setPasswordMessag, code); 
             if (info) {
                 await userModel.updateOne(
