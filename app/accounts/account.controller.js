@@ -17,7 +17,8 @@ const deleteAccount = async (req, res, next)=>{
         const {lang} = req.query
         const {userId}=req.user;
         const token=req.headers.authorization.split("treasures_")[1]
-        await userModel.updateOne({userId}, {$set:{isDeleted: true, userFavourite: [], activateEmail: false}})
+        //await userModel.updateOne({userId}, {$set:{isDeleted: true, userFavourite: [], activateEmail: false}})
+        await userModel.deleteOne({userId})
         await tokenSchema.deleteOne({token});
         (lang === "en")? 
         sendResponse(res, constants.RESPONSE_SUCCESS, "account is  deleted", '', [] ):
