@@ -10,8 +10,12 @@ const jwtGenerator = require("../utils/jwt.generator.js");
 const tokenSchema = require("./token.schema.js");
 const bcrypt = require("bcryptjs");
 const { OAuth2Client } = require('google-auth-library');
+const { create } = require('handlebars');
 const client = new OAuth2Client(CONFIG.GOOGLE_CLIENT_ID);
 
+createCode = ()=>{
+    return Math.floor(100000 + Math.random() * 900000);
+}
 //-------------------------------------user-------------------------------------//
 const signUp = async(req, res, next) => {
     try {
@@ -27,7 +31,7 @@ const signUp = async(req, res, next) => {
             });
             //const confirmLink = "confirm your account";
             const confirmMessag ="Confirmation Email Send From Treasures of Egypt Application";
-            const code = Math.floor(10000 + Math.random() * 90000);
+            const code = createCode();
             const info = await helper.sendConfirmEmail(req,newUser,"","",confirmMessag,code);
             if (info) {
                 const savedUser = await newUser.save();
@@ -80,7 +84,7 @@ const login = async (req, res, next) => {
         //..Check if Email is Activated..//
         if (!user.activateEmail) {
             const confirmMessag ="Confirmation Email Send From Treasures of Egypt Application";
-            const code = Math.floor(10000 + Math.random() * 90000);
+            const code = createCode();
             const result = await helper.sendConfirmEmail(req,user,"","",confirmMessag,code);
             if (result) {
                 await userModel.updateOne(
@@ -183,7 +187,7 @@ const reSendcode = async (req, res, next) => {
             sendResponse(res, constans.RESPONSE_BAD_REQUEST, "This email does not exist", {}, []):
             sendResponse(res, constans.RESPONSE_BAD_REQUEST, "هذا الايميل غير موجود", {}, []);
         } else {
-            const code = Math.floor(10000 + Math.random() * 90000);
+            const code = createCode();
             const info = helper.sendEmail( user, "recovery code", code);
             if (info) {
                 await userModel.updateOne(
@@ -210,7 +214,7 @@ const forgetPassword = async (req, res, next) => {
             sendResponse(res, constans.RESPONSE_BAD_REQUEST, "This email does not exist", {}, []):
             sendResponse(res, constans.RESPONSE_BAD_REQUEST, "هذا الايميل غير موجود", {}, []);
         } else {
-            const code = Math.floor(10000 + Math.random() * 90000);
+            const code = createCode();
             const setPasswordMessag = "an update password email was sent from Treasures of Egypt Application";
             const info = helper.sendEmail(user, setPasswordMessag, code); 
             if (info) {
